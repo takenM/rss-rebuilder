@@ -56,6 +56,11 @@ def transform(channel: ET.Element) -> None:
         if "【本編】" in (item.findtext("title") or ""):
             channel.remove(item)
 
+    # 元の番組と区別がつくようにチャンネル名を変える
+    title = channel.find("title")
+    if title is not None and title.text:
+        title.text = title.text + "（アフタートークのみ）"
+
     # --- 例1: チャンネルのタイトルを変える ---------------------
     # title = channel.find("title")
     # if title is not None:
