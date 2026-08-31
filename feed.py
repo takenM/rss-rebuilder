@@ -51,6 +51,11 @@ def transform(channel: ET.Element) -> None:
     """
     items = channel.findall("item")
 
+    # 本編は自分で録音しているので除外。アフタートーク・未公開などだけ残す
+    for item in items:
+        if "【本編】" in (item.findtext("title") or ""):
+            channel.remove(item)
+
     # --- 例1: チャンネルのタイトルを変える ---------------------
     # title = channel.find("title")
     # if title is not None:
