@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: write
+  actions: write # 60日ルール対策の再有効化APIに必要
 
 concurrency:
   group: build-feed
@@ -42,3 +43,11 @@ jobs:
             git commit -m "chore: update feed ($(date -u '+%Y-%m-%d %H:%M UTC'))"
             git push
           fi
+
+      # リポジトリに人間の操作が60日間ないと GitHub がスケジュール実行を
+      # 自動停止する。ワークフロー自身を再有効化するとタイマーがリセット
+      # されるので、実行のたびに呼んで停止を防ぐ
+      - name: スケジュール自動停止を防ぐ
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/build-feed.yml/enable"
